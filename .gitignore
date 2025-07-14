@@ -4,6 +4,7 @@ __pycache__/
 *$py.class
 toy_exp/must_c_ST_TTS_segments
 toy_exp/must_c_ST_segments
+toy_exp/toy_audio_toolcall.json
 # C extensions
 *.so
 
