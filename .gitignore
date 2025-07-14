@@ -2,7 +2,8 @@
 __pycache__/
 *.py[cod]
 *$py.class
-
+toy_exp/must_c_ST_TTS_segments
+toy_exp/must_c_ST_segments
 # C extensions
 *.so
 
