@@ -8,6 +8,7 @@ from glob import glob
 import os
 import yaml
 import soundfile as sf
+import pdb
 
 # 1. Define your tool schemas
 TOOLS = [
@@ -247,7 +248,7 @@ def build_asr_no_se_conversation(meta):
     conv.append({"from":"gpt", "value": summary})
     return conv
 
-asr_wavs = glob(f'{Librispeech_root}/train-clean-360/**/*.flac')
+asr_wavs = glob(f'{Librispeech_root}/train-clean-360/*/*/*.flac')
 asr_wavs = random.sample(asr_wavs, 100)
 AUDIO_CLIPS_ASR_no_SE = []
 utt_dict = {}
@@ -312,7 +313,7 @@ utt_dict = {}
 for wav in chime_wavs:
     utt_id = os.path.basename(wav).replace('.wav', '')
     folder_name = wav.split('/')[-2]
-    with open('{}/transcriptions/{}/{}.trn'.format(chime_root, folder_name, utt_id)) as f:
+    with open('{}/data/transcriptions/{}/{}.trn'.format(chime_root, folder_name, utt_id)) as f:
         for line in f:
             utt_id, text = line.strip().split(' ', 1)
             utt_dict[utt_id] = text.lower()
@@ -365,11 +366,21 @@ def build_st_en2x_conversation(meta):
 
 must_c_root = '/ocean/projects/cis210027p/shared/corpora/must-c_v1.2'
 must_c_wavs = glob(f'{must_c_root}/en-*/data/train/wav/*.wav')
-must_c_wavs = random.sample(must_c_wavs, 100)
+# Filter out wavs longer than 15 minutes
+filtered_must_c_wavs = []
+for wav in must_c_wavs:
+    try:
+        with sf.SoundFile(wav) as f:
+            duration = len(f) / f.samplerate
+        if duration <= 900:
+            filtered_must_c_wavs.append(wav)
+    except Exception as e:
+        print(f"Error reading {wav}: {e}")
+must_c_wavs = random.sample(filtered_must_c_wavs, 100)
 AUDIO_CLIPS_ST = []
 for wav_file in must_c_wavs:
     # extract lang‐pair and target code
-    lang_pair = os.path.basename(os.path.dirname(os.path.dirname(wav_file)))  # e.g. "en-ar"
+    lang_pair = wav_file.split('/')[-5]  # e.g. "en-ar"
     tgt_lang  = lang_pair.split('-')[1]
 
     txt_dir = os.path.join(must_c_root, lang_pair, 'data', 'train', 'txt')
@@ -471,11 +482,21 @@ def build_st_en2x_tts_conversation(meta):
 
 must_c_root = '/ocean/projects/cis210027p/shared/corpora/must-c_v1.2'
 must_c_wavs = glob(f'{must_c_root}/en-*/data/train/wav/*.wav')
-must_c_wavs = random.sample(must_c_wavs, 100)
+# Filter out wavs longer than 15 minutes
+filtered_must_c_wavs = []
+for wav in must_c_wavs:
+    try:
+        with sf.SoundFile(wav) as f:
+            duration = len(f) / f.samplerate
+        if duration <= 900:
+            filtered_must_c_wavs.append(wav)
+    except Exception as e:
+        print(f"Error reading {wav}: {e}")
+must_c_wavs = random.sample(filtered_must_c_wavs, 100)
 AUDIO_CLIPS_ST_TTS = []
 for wav_file in must_c_wavs:
     # extract lang‐pair and target code
-    lang_pair = os.path.basename(os.path.dirname(os.path.dirname(wav_file)))  # e.g. "en-ar"
+    lang_pair = wav_file.split('/')[-5]  # e.g. "en-ar"
     tgt_lang  = lang_pair.split('-')[1]
 
     txt_dir = os.path.join(must_c_root, lang_pair, 'data', 'train', 'txt')
