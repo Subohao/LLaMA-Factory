@@ -330,7 +330,7 @@ for clip in AUDIO_CLIPS_ASR:
     dataset.append(sample)
 
 
-lang_map = {'ar': 'Arabic', 'de': 'German', 'en': 'English', 'es': 'Spanish', 'fr': 'French', 'it': 'Italian', 'pt': 'Portuguese', 'ru': 'Russian', 'fa': 'Persian', 'nl': 'Dutch', 'ro': 'Romanian'}
+lang_map = {'ar': 'Arabic', 'cs': 'Czech','de': 'German', 'en': 'English', 'es': 'Spanish', 'fr': 'French', 'it': 'Italian', 'pt': 'Portuguese', 'ru': 'Russian', 'fa': 'Persian', 'nl': 'Dutch', 'ro': 'Romanian'}
 st_en2x_vairants = ["Translate this audio message to ", "Convert this spoken message into ", "Provide a translation of this audio into ", \
     "Translate what's being said here into ", "Give me this audio in "]
 def build_st_en2x_conversation(meta):
@@ -413,11 +413,13 @@ for wav_file in must_c_wavs:
     seg['translated_text']  = tr_lines[idx]
     seg['lang']             = tgt_lang
 
-    # 5) read & slice
-    data, sr = sf.read(wav_file)
-    start = int(seg['offset'] * sr)
-    end   = start + int(seg['duration'] * sr)
-    clip  = data[start:end]
+    # 5) read & slice (memory efficient)
+    with sf.SoundFile(wav_file) as f:
+        sr = f.samplerate
+        start = int(seg['offset'] * sr)
+        end = start + int(seg['duration'] * sr)
+        f.seek(start)
+        clip = f.read(end - start)
 
     # 6) write out
     out_dir = 'must_c_ST_segments'
@@ -529,11 +531,13 @@ for wav_file in must_c_wavs:
     seg['translated_text']  = tr_lines[idx]
     seg['lang']             = tgt_lang
 
-    # 5) read & slice
-    data, sr = sf.read(wav_file)
-    start = int(seg['offset'] * sr)
-    end   = start + int(seg['duration'] * sr)
-    clip  = data[start:end]
+    # 5) read & slice (memory efficient)
+    with sf.SoundFile(wav_file) as f:
+        sr = f.samplerate
+        start = int(seg['offset'] * sr)
+        end = start + int(seg['duration'] * sr)
+        f.seek(start)
+        clip = f.read(end - start)
 
     # 6) write out
     out_dir = 'must_c_ST_TTS_segments'
