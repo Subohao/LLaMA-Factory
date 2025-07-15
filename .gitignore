@@ -4,7 +4,9 @@ __pycache__/
 *$py.class
 toy_exp/must_c_ST_TTS_segments
 toy_exp/must_c_ST_segments
+toy_exp/librimix_audios
 toy_exp/toy_audio_toolcall.json
+toy_exp/toy_audio_toolcall_new_format.json
 # C extensions
 *.so
 

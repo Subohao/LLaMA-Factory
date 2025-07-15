@@ -1,4 +1,13 @@
 {
+  "toy_audio_toolcall": {
+    "file_name": "toy_audio_toolcall_new_format.json",
+    "formatting": "sharegpt",
+    "columns": {
+      "messages": "conversations",
+      "audios": "audios",
+      "tools": "tools"
+    }
+  },
   "identity": {
     "file_name": "identity.json"
   },
